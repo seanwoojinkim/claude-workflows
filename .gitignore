@@ -1,0 +1,33 @@
+# Claude Workflows Toolkit - Git Ignore
+
+# Keep the thoughts directory structure, but ignore any example documents
+thoughts/**/*.md
+!thoughts/**/.gitkeep
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
