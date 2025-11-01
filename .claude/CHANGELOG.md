@@ -154,6 +154,4 @@
 
 ---
 
-**Maintained by**: Sean Kim
-**Repository**: mrp-docker
 **Philosophy**: Maximize learning while building beyond current skill level

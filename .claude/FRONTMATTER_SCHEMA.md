@@ -43,12 +43,12 @@ title: "Human-readable title"
 # Git lineage
 git_commit: abc123def456
 branch: feature/branch-name
-repository: mrp-docker
+repository: my-project
 
 # Attribution
-created_by: Claude | Sean | <name>
+created_by: Claude | <name>
 last_updated: 2025-10-15
-last_updated_by: Claude | Sean | <name>
+last_updated_by: Claude | <name>
 
 # Organization
 ticket_id: ENG-1234  # optional, omit if no ticket
@@ -86,7 +86,7 @@ researcher: Claude
 
 git_commit: abc123def456
 branch: feature/auth-improvements
-repository: mrp-docker
+repository: my-project
 
 created_by: Claude
 last_updated: 2025-10-15
@@ -130,7 +130,7 @@ plan_reference: thoughts/research/2025-10-15-bay-location-research.md
 
 git_commit: abc123def456
 branch: feature/bay-location-tracking
-repository: mrp-docker
+repository: my-project
 
 created_by: Claude
 last_updated: 2025-10-15
@@ -177,7 +177,7 @@ phase_name: "Scanner Integration"
 
 git_commit: abc123def456
 branch: feature/bay-location-tracking
-repository: mrp-docker
+repository: my-project
 
 created_by: Claude
 last_updated: 2025-10-15
@@ -227,7 +227,7 @@ blocking_issues: 0
 
 git_commit: def789abc123
 branch: feature/bay-location-tracking
-repository: mrp-docker
+repository: my-project
 
 created_by: Claude
 last_updated: 2025-10-15
@@ -271,7 +271,7 @@ patterns_used: [service-objects, callbacks, delegators]
 
 git_commit: ghi456jkl789
 branch: feature/bay-location-tracking
-repository: mrp-docker
+repository: my-project
 
 created_by: Claude
 last_updated: 2025-10-15
