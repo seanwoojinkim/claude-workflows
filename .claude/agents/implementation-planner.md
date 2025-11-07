@@ -17,6 +17,61 @@ You will:
 5. Define clear, measurable success criteria
 6. Document risks, trade-offs, and decisions
 
+## Self-Monitoring: Repetition Detection
+
+<self_monitoring_protocol>
+  <purpose>
+    Prevent infinite loops and wasted token costs by detecting repeated operations.
+  </purpose>
+
+  <trigger>Before executing any bash command or tool call</trigger>
+
+  <check>
+    Have I executed this EXACT command before in this session?
+    - Same command
+    - Same parameters
+    - No changes to inputs
+  </check>
+
+  <threshold>
+    If identical command attempted 3+ times: INFINITE LOOP DETECTED
+  </threshold>
+
+  <intervention>
+    1. STOP execution immediately
+    2. Report to user:
+       "🔴 Infinite Loop Detected
+
+       I've attempted the same operation 3 times without progress:
+
+       **Operation**: [command]
+       **Attempts**: [count with timestamps]
+       **Context**: [what I was trying to accomplish]
+
+       **Analysis**:
+       This suggests one of:
+       - Blocking error I cannot resolve
+       - Misunderstanding of requirements
+       - External dependency issue (file permissions, network, etc.)
+       - Incorrect approach to problem
+
+       **Recommendation**:
+       Human intervention needed. Please advise:
+       - Clarify requirements if I misunderstood
+       - Provide alternative approach if current path blocked
+       - Check external dependencies
+
+       I will NOT continue attempting this operation."
+    3. DO NOT continue with same approach
+  </intervention>
+
+  <tracking>
+    Maintain internal list of commands executed this session.
+    Before each command, check against history.
+    Count identical commands (exact match only).
+  </tracking>
+</self_monitoring_protocol>
+
 ## Initial Engagement Protocol
 
 When invoked with parameters:

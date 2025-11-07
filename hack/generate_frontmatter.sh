@@ -54,6 +54,11 @@ Optional Arguments:
 Options (type-specific):
   Research:
     --research-question "..."  - The research question
+    --research-type TYPE       - Type of research: online_research, codebase_research, or hybrid
+    --research-strategy "..."  - Strategy used (e.g., "academic,industry")
+    --sources-reviewed N       - Number of sources reviewed
+    --quality-score SCORE      - Overall quality: high, medium, or low
+    --confidence LEVEL         - Confidence level: high, medium, or low
 
   Plan:
     --feature "..."           - Feature name
@@ -89,6 +94,11 @@ Examples:
   # Research document
   $0 research "Authentication Flow Investigation" ENG-1234 \\
     --research-question "How does authentication work in the application?" \\
+    --research-type "online_research" \\
+    --research-strategy "academic,industry" \\
+    --sources-reviewed 15 \\
+    --quality-score "high" \\
+    --confidence "high" \\
     --tags "research,authentication,security"
 
   # Plan document
@@ -179,6 +189,11 @@ RELATED_DOCS=""
 
 # Type-specific defaults and variables
 RESEARCH_QUESTION=""
+RESEARCH_TYPE=""
+RESEARCH_STRATEGY=""
+SOURCES_REVIEWED=""
+QUALITY_SCORE=""
+CONFIDENCE=""
 FEATURE=""
 PLAN_REF=""
 IMPL_REF=""
@@ -198,6 +213,26 @@ while [ $# -gt 0 ]; do
     case $1 in
         --research-question)
             RESEARCH_QUESTION="$2"
+            shift 2
+            ;;
+        --research-type)
+            RESEARCH_TYPE="$2"
+            shift 2
+            ;;
+        --research-strategy)
+            RESEARCH_STRATEGY="$2"
+            shift 2
+            ;;
+        --sources-reviewed)
+            SOURCES_REVIEWED="$2"
+            shift 2
+            ;;
+        --quality-score)
+            QUALITY_SCORE="$2"
+            shift 2
+            ;;
+        --confidence)
+            CONFIDENCE="$2"
             shift 2
             ;;
         --feature)
@@ -292,6 +327,9 @@ cat << EOF
 doc_type: $DOC_TYPE
 date: $ISO_DATETIME
 title: "$TITLE"
+_generated: true
+_script_version: "1.0"
+_generated_at: "$ISO_DATETIME"
 EOF
 
 # Add type-specific fields
@@ -299,6 +337,21 @@ case $DOC_TYPE in
     research)
         if [ -n "$RESEARCH_QUESTION" ]; then
             echo "research_question: \"$RESEARCH_QUESTION\""
+        fi
+        if [ -n "$RESEARCH_TYPE" ]; then
+            echo "research_type: $RESEARCH_TYPE"
+        fi
+        if [ -n "$RESEARCH_STRATEGY" ]; then
+            echo "research_strategy: \"$RESEARCH_STRATEGY\""
+        fi
+        if [ -n "$SOURCES_REVIEWED" ]; then
+            echo "sources_reviewed: $SOURCES_REVIEWED"
+        fi
+        if [ -n "$QUALITY_SCORE" ]; then
+            echo "quality_score: $QUALITY_SCORE"
+        fi
+        if [ -n "$CONFIDENCE" ]; then
+            echo "confidence: $CONFIDENCE"
         fi
         echo "researcher: $AUTHOR_NAME"
         echo ""
