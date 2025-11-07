@@ -17,6 +17,7 @@ This directory contains the specialized agent system and workflow documentation 
 - **`AGENT_WORKFLOW.md`** - Complete workflow guide with diagrams, examples, and best practices
 - **`FRONTMATTER_SCHEMA.md`** - Standard metadata schema for all thought documents
 - **`FRONTMATTER_GENERATION.md`** - Automated frontmatter generation script usage guide
+- **`TESTING_RESEARCH_AGENTS.md`** - Testing procedures for online research agents
 - **`QUICK_REFERENCE.md`** - Quick reference card for common operations
 - **`CHANGELOG.md`** - Version history and system evolution
 
@@ -24,7 +25,13 @@ This directory contains the specialized agent system and workflow documentation 
 
 Located in `agents/` directory:
 
+**Research Agents:**
 - **`codebase-researcher.md`** (Blue) - Investigates existing code, documents patterns
+- **`research-coordinator.md`** (Teal) - Coordinates online research, spawns sub-agents
+- **`academic-researcher.md`** (Orange) - Sub-agent for academic literature and peer-reviewed research
+- **`industry-researcher.md`** (Cyan) - Sub-agent for industry practices and expert insights
+
+**Implementation Agents:**
 - **`implementation-planner.md`** (Purple) - Designs solutions, creates phased plans
 - **`plan-implementer.md`** (Red) - Executes implementation phases, writes code
 - **`code-reviewer.md`** (Green) - Reviews code quality, generates mini-lessons
@@ -33,8 +40,11 @@ Located in `agents/` directory:
 ## Agent Overview
 
 ```
-Research → Plan → [Implement → Review → Human QA]* → Synthesis
-  Blue     Purple      Red       Green      👤        Yellow
+Research Phase (can run in parallel):
+  Codebase Research (Blue) ──┐
+  Online Research (Teal)     ├─→ Plan (Purple) → [Implement → Review → Human QA]* → Synthesis
+    ├─ Academic (Orange)     │                      Red       Green      👤        Yellow
+    └─ Industry (Cyan)   ────┘
 
 * Phase loop repeats until feature is complete
 ```
@@ -64,9 +74,34 @@ thoughts/
 
 ## Typical Workflows
 
-### Research-First (Complex Features)
+### Comprehensive Research (Novel Features with External Knowledge)
+```bash
+"Research vector similarity algorithms and compare to our implementation"
+→ Spawns codebase-researcher (Blue) + research-coordinator (Teal) in parallel
+  → research-coordinator spawns academic-researcher (Orange) + industry-researcher (Cyan)
+→ Review all findings (external best practices + internal code)
+"Create plan to improve our recommendation system based on research"
+→ Approve plan
+"Implement phase 1 of the improvements"
+→ Manual QA
+→ Repeat for all phases
+"Create learning synthesis for vector similarity feature"
+```
+
+### Online Research Only (Knowledge Building)
+```bash
+"Research best practices for API rate limiting"
+→ Spawns research-coordinator (Teal)
+  → May spawn academic-researcher and/or industry-researcher
+→ Review findings with actionable recommendations
+"Create plan to implement rate limiting based on research"
+→ Approve plan and continue implementation...
+```
+
+### Codebase Research (Internal Focus)
 ```bash
 "Research how authentication works in this codebase"
+→ Spawns codebase-researcher (Blue)
 → Review findings
 "Create implementation plan for OAuth2 authentication"
 → Approve plan

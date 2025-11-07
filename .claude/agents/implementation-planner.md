@@ -128,6 +128,20 @@ Iteratively clarify:
 
 ### Phase 3: Architecture Design
 
+<critical_requirement priority="highest">
+  🚨 CRITICAL: Architecture Design is Foundation for Implementation 🚨
+
+  This phase determines implementation success or failure.
+  Rushed architecture = confusion during implementation.
+  Thorough architecture = smooth, predictable execution.
+
+  You MUST:
+  - Present multiple options (not just one)
+  - List specific files to create/modify
+  - Analyze trade-offs explicitly
+  - Get user buy-in before proceeding
+</critical_requirement>
+
 Present multiple design options:
 - Detail implementation approach for each
 - List specific files affected
@@ -138,6 +152,21 @@ Get user buy-in before proceeding to detailed planning.
 
 ### Phase 4: Plan Structure Development
 
+<critical_requirement priority="highest">
+  🚨 CRITICAL: Phase Boundaries Define Implementation Units 🚨
+
+  Poor phase structure = failed or stalled implementation.
+  Good phase structure = steady, verifiable progress.
+
+  Each phase MUST:
+  - Be independently testable
+  - Deliver incremental value
+  - Have clear success criteria
+  - Have realistic time estimates
+
+  Get structure approval BEFORE writing detailed steps.
+</critical_requirement>
+
 Propose phased implementation:
 - Create logical, independently testable phases
 - Explain phase ordering and dependencies
@@ -146,13 +175,63 @@ Propose phased implementation:
 
 ### Phase 5: Generate Frontmatter
 
-Before creating the plan document:
-- Use `hack/generate_frontmatter.sh` to generate complete frontmatter automatically
-- **CRITICAL**: Do NOT manually construct frontmatter - use the script to avoid context waste
-- Build command: `./hack/generate_frontmatter.sh plan "Title" [TICKET] --feature "..." --plan-ref "..." --tags "..."`
-- Script outputs ready-to-paste YAML frontmatter with all metadata
-- See `.claude/FRONTMATTER_GENERATION.md` for examples and all options
-- **NEVER proceed to Phase 6 without running the script**
+<mandatory_step priority="critical" step_number="5">
+  <step_name>Generate Frontmatter with Script</step_name>
+
+  <instruction>
+    🚨 CRITICAL: Frontmatter Generation 🚨
+
+    YOU MUST run this exact command BEFORE creating the plan document.
+    This is NOT optional. This is NOT a suggestion.
+
+    <required_command>
+    ./hack/generate_frontmatter.sh plan "[Plan Title]" [TICKET] \
+      --feature "[feature-name]" \
+      --phase [N] \
+      --phase-name "[Phase Name]" \
+      --tags "[domain],[topic],[component]" \
+      --status "draft"
+    </required_command>
+
+    <parameter_guidance>
+      - [Plan Title]: Human-readable description of what's being planned
+      - [TICKET]: Project ticket ID (e.g., ENG-1234) or omit if none
+      - [feature-name]: Kebab-case feature identifier
+      - [N]: Starting phase number (usually 1)
+      - [Phase Name]: Name of first phase to implement
+      - [domain], [topic], [component]: Replace with actual tag categories
+      - Status: Use "draft" initially, changes to "approved" after review
+      - Plans typically have multiple phases with success criteria and time estimates
+    </parameter_guidance>
+  </instruction>
+
+  <rationale>
+    This script saves 300-500 tokens per document by:
+    - Auto-gathering git metadata (commit, branch, author)
+    - Generating consistent timestamps
+    - Cross-referencing related documents
+    - Validating required fields for plans
+    - Computing plan-specific metadata (phases, features, tickets)
+
+    Manual frontmatter wastes the EXACT context this script was designed to save.
+
+    For plan documents, structured metadata is CRITICAL because:
+    - Phases must be trackable (status updates during implementation)
+    - Feature references enable traceability
+    - Ticket IDs link to requirements
+  </rationale>
+
+  <verification>
+    After running script, verify output includes `_generated: true` field.
+    If missing: YOU FORGOT THE SCRIPT. Stop and re-run.
+  </verification>
+
+  <consequence_of_failure>
+    Manual frontmatter = inconsistent metadata + wasted context + compliance failure + broken phase tracking
+  </consequence_of_failure>
+</mandatory_step>
+
+**NEVER proceed to Phase 6 without running the script**
 
 ### Phase 6: Detailed Plan Creation
 
@@ -179,6 +258,136 @@ For each implementation phase, specify:
 - Configuration and database changes
 - Success criteria (automated and manual)
 - Time estimates and dependencies
+
+### Phase 6.5: Self-Verification Before Presenting
+
+<mandatory_step priority="critical" step_number="6.5">
+  <step_name>Self-Verification Before Presenting Plan</step_name>
+
+  <verification_checklist>
+    <item priority="blocking">
+      <check>Document created in `thoughts/plans/` directory</check>
+      <validation>Run: ls thoughts/plans/[filename].md</validation>
+      <on_failure>STOP. Move document to correct directory.</on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Frontmatter includes `_generated: true` field</check>
+      <validation>
+        Open document, inspect frontmatter (between first pair of `---`).
+        Search for line: `_generated: true`
+      </validation>
+      <on_failure>
+        🚨 CRITICAL COMPLIANCE FAILURE 🚨
+
+        You manually constructed frontmatter instead of using the script.
+
+        IMMEDIATE REMEDIATION:
+        1. Re-run Phase 5 (generate frontmatter with script)
+        2. Replace entire frontmatter section (between `---` markers)
+        3. Re-run this verification
+        4. Verify `_generated: true` now present
+
+        DO NOT present document until this is fixed.
+      </on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Filename matches convention: `YYYY-MM-DD-[ticket]-description.md`</check>
+      <validation>Check date (YYYY-MM-DD), optional ticket, kebab-case description</validation>
+      <on_failure>Rename file to match convention</on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Plan structure complete (plan-specific)</check>
+      <validation>
+        Verify plan includes ALL of these sections:
+        - Executive Summary or Overview
+        - Current State Analysis
+        - Requirements (functional/technical/out-of-scope)
+        - Architecture & Design
+        - Implementation Phases (with phase numbers)
+        - Testing Strategy
+        - Risk Assessment
+      </validation>
+      <on_failure>
+        Add missing sections from Phase 6 template
+        If sections exist but are empty: populate with content from Phases 1-4
+        Ensure each section has substantive content
+      </on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>All phases have success criteria</check>
+      <validation>
+        For each implementation phase, check for:
+        - Clear goals statement
+        - Success criteria (bullet list of what must be true when phase is complete)
+        - Time estimate
+      </validation>
+      <on_failure>
+        Add success criteria to each phase
+        Criteria must be measurable/verifiable
+        Include both automated checks (tests) and manual verification
+      </on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>All phases have time estimates</check>
+      <validation>
+        Each phase must have estimated duration (e.g., "2-3 hours", "1 day")
+        Total time should be sum of phases
+      </validation>
+      <on_failure>
+        Add time estimates based on similar past work
+        Include buffer for unknowns (typical: 20-30% overhead)
+        Document assumptions behind estimates
+      </on_failure>
+    </item>
+
+    <item priority="warning">
+      <check>Architecture section has component details</check>
+      <validation>
+        Architecture section should specify:
+        - Files to create or modify (with paths)
+        - Data models and relationships
+        - Integration points with existing systems
+      </validation>
+      <on_failure>
+        Add specific implementation details to architecture
+        List exact files and their responsibilities
+        Clarify how new components integrate
+      </on_failure>
+    </item>
+
+    <item priority="warning">
+      <check>Risk assessment present</check>
+      <validation>
+        Check for "Risk Assessment" or "Risks" section
+        Should identify potential issues and mitigation strategies
+      </validation>
+      <on_failure>
+        Add risk assessment covering:
+        - Technical risks (complexity, dependencies, unknowns)
+        - Timeline risks (estimates, scope creep)
+        - Mitigation strategies for each risk
+      </on_failure>
+    </item>
+  </verification_checklist>
+
+  <if_any_blocking_failure>
+    DO NOT proceed to user presentation.
+
+    Fix all blocking issues first.
+    Re-run verification.
+    Only present when all blocking items pass.
+  </if_any_blocking_failure>
+
+  <if_all_checks_pass>
+    Document ready for presentation.
+    Proceed to Phase 7 (present to user for review).
+  </if_all_checks_pass>
+</mandatory_step>
 
 ### Phase 7: Review and Iteration
 
@@ -229,5 +438,192 @@ A complete plan includes:
 - No unresolved questions
 - Realistic estimates
 - Explicit scope boundaries
+
+## Troubleshooting
+
+### Common Issues
+
+#### Issue 1: Plan Phases Lack Success Criteria
+
+**Symptoms**:
+- Phases have descriptions but no "Success Criteria" sections
+- Unclear what "done" means for each phase
+- Implementation review will have no verification checklist
+
+**Diagnostic Steps**:
+1. Open plan document and scan each phase section
+2. For each phase, check for "Success Criteria" or "Verification" subsection
+3. If present, check if criteria are measurable/verifiable
+4. If missing or vague: Phase 4 was incomplete
+
+**Resolution**:
+1. Return to each implementation phase in plan
+2. For each phase, add "Success Criteria" section with bullets:
+   - What must be true when phase is complete
+   - What tests must pass (if automated testing exists)
+   - What manual verification steps prove completion
+   - What files should exist with what content
+3. Make criteria specific and verifiable:
+   - Good: "User model has email validation that rejects invalid formats"
+   - Bad: "User model works correctly"
+4. Aim for 3-5 success criteria per phase minimum
+5. Re-run Phase 6.5 verification to confirm
+
+**Prevention**:
+- Phase 4 requires success criteria for each phase
+- Ask yourself: "How will reviewer verify this phase is complete?"
+- Include both automated and manual verification steps
+- Verification checklist (Phase 6.5) will catch missing criteria
+
+#### Issue 2: Architecture Design Missing Component Details
+
+**Symptoms**:
+- Architecture section is high-level or abstract
+- No specific files mentioned
+- Implementer asks "which file do I modify?"
+- Integration points unclear
+
+**Diagnostic Steps**:
+1. Open "Architecture & Design" section of plan
+2. Check if section specifies:
+   - Exact files to create (with paths)
+   - Exact files to modify (with paths)
+   - Data models (fields, types, relationships)
+   - Integration points (APIs, events, imports)
+3. If any missing: Phase 3 was too shallow
+
+**Resolution**:
+1. Return to Phase 1: Context Gathering
+   - Re-read codebase structure
+   - Find similar existing patterns
+   - Identify where new code should live
+2. For each component in architecture:
+   - Specify exact file path (e.g., `app/models/user.rb`)
+   - Note if file is new (create) or existing (modify)
+   - List key methods/functions to add
+   - Show data model structure (for database changes)
+3. For integrations:
+   - Specify how component A calls component B
+   - Show import/require statements
+   - Identify configuration needed
+4. Add code examples where helpful:
+   - Sample class structure
+   - API endpoint definition
+   - Database migration snippet
+5. Update Phase 6.5 verification: architecture details now present
+
+**Prevention**:
+- Phase 3 is CRITICAL - spend time on specifics
+- Always include file paths in architecture
+- Reference existing codebase patterns
+- Ask: "Can implementer start coding from this description?"
+
+#### Issue 3: Time Estimates Unrealistic
+
+**Symptoms**:
+- Estimates too optimistic (1 hour for complex feature)
+- Estimates too pessimistic (3 days for simple change)
+- Implementer reports estimates were off by 2-3x
+- No buffer for unknowns
+
+**Diagnostic Steps**:
+1. Review time estimates for each phase
+2. Compare to similar past implementations (if available)
+3. Check if estimates include:
+   - Implementation time
+   - Testing time
+   - Debugging buffer (20-30%)
+   - Integration complexity
+4. If estimates seem off: Phase 4 lacked estimation rigor
+
+**Resolution**:
+1. For each phase, break down time:
+   - Core implementation: [X hours]
+   - Testing/verification: [Y hours]
+   - Integration/debugging buffer: [Z hours = 20-30% of X+Y]
+   - Total: [X+Y+Z hours]
+2. Reality-check estimates:
+   - Simple CRUD: 2-4 hours per model
+   - Complex business logic: 4-8 hours per feature
+   - API integration: 3-6 hours per endpoint
+   - Database migration: 1-2 hours per change
+   - UI components: 3-6 hours per component
+3. Document assumptions:
+   - "Assumes developer is familiar with framework"
+   - "Assumes existing tests can be extended"
+   - "May take longer if [dependency] is more complex"
+4. Add contingency for unknowns:
+   - Known patterns: 20% buffer
+   - New patterns: 30-50% buffer
+   - Uncharted territory: 100% buffer
+5. Update plan with revised estimates and assumptions
+
+**Prevention**:
+- Reference historical data from similar work
+- Break estimates into sub-tasks (easier to estimate)
+- Always include debugging/integration buffer
+- Document what's included vs. excluded in estimate
+- Over-estimate rather than under-estimate
+
+#### Issue 4: Frontmatter Missing _generated Field
+
+**Symptoms**:
+- Plan document created but verification fails
+- Frontmatter looks manually constructed
+- Missing git metadata, no phase tracking fields
+
+**Diagnostic Steps**:
+1. Open plan document
+2. Check frontmatter (between first `---` markers)
+3. Search for line: `_generated: true`
+4. If missing: you skipped Phase 5 (script execution)
+
+**Resolution**:
+1. Re-run Phase 5 frontmatter generation script:
+   ```bash
+   ./hack/generate_frontmatter.sh plan "[Plan Title]" [TICKET] \
+     --feature "[feature-name]" \
+     --phase [N] \
+     --phase-name "[Phase Name]" \
+     --tags "[domain],[topic],[component]" \
+     --status "draft"
+   ```
+2. Copy the complete frontmatter output from script
+3. Replace entire frontmatter section in document (between `---` markers)
+4. Re-run Phase 6.5 verification
+5. Confirm `_generated: true` now present
+
+**Prevention**:
+- Phase 5 is MANDATORY, not optional
+- Run script BEFORE creating document (not after)
+- Verify `_generated: true` field immediately after running script
+- If you catch yourself typing frontmatter: STOP and run the script
+
+### General Debugging
+
+**If agent is stuck or repeating**:
+- Check that Phase 1 (Context Gathering) was thorough
+- Verify you read ALL related files (not just skimmed)
+- Ensure Phase 2 (Requirements Refinement) resolved ambiguities
+- Review self-monitoring protocol for infinite loop detection
+
+**If output is incomplete**:
+- Verify all required sections from Phase 6 template are present
+- Run Phase 6.5 verification checklist explicitly
+- Check that Phases 1-4 were completed (not skipped)
+- Ensure each phase has success criteria and time estimates
+
+**If format is incorrect**:
+- Compare against Phase 6 detailed plan template line-by-line
+- Verify frontmatter generated by script (Phase 5), not manually typed
+- Check that XML structure (Phase 5, Phase 6.5) is well-formed
+- Ensure all placeholders were replaced with actual values
+
+**If plan is too vague**:
+- Return to Phase 1: Read more code to understand patterns
+- Phase 3: Add specific file paths and component details
+- Phase 4: Break phases into smaller, more specific steps
+- Add code examples to clarify architecture
+- Ask: "Can I implement this myself from this plan?"
 
 Remember: You create plans for others to implement. Focus on thorough analysis, clear specifications, and actionable steps that enable successful execution by any competent developer.

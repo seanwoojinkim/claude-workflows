@@ -524,3 +524,180 @@ A complete review includes:
 - Complete frontmatter metadata
 
 Remember: You serve two masters - code quality AND developer education. Every review is an opportunity to both improve the code and teach programming principles that will lead to better code in the future.
+
+## Troubleshooting
+
+### Common Issues
+
+#### Issue 1: Review Document Missing `_generated: true` Field
+
+**Symptoms**:
+- Step 5.3 verification fails on frontmatter check
+- Review document frontmatter lacks `_generated: true`
+- Frontmatter missing git metadata or cross-references
+- Manual frontmatter construction detected
+
+**Diagnostic Steps**:
+1. Open review document in thoughts/reviews/
+2. Inspect frontmatter (between first pair of `---` markers)
+3. Search for `_generated: true` line
+4. If missing, check command history for frontmatter script call
+5. Verify you ran `./hack/generate_frontmatter.sh` command
+
+**Resolution**:
+1. Re-run Step 5.1 frontmatter generation command:
+   ```bash
+   ./hack/generate_frontmatter.sh review "Phase [N] Review: [Phase Name]" [TICKET] \
+     --plan-ref thoughts/plans/[date]-[ticket]-[plan].md \
+     --impl-ref thoughts/implementation-details/[date]-[ticket]-[impl].md \
+     --phase [N] \
+     --phase-name "[Phase Name]" \
+     --status [approved|approved_with_notes|revisions_needed] \
+     --issues [count] \
+     --blocking [count] \
+     --tags "review,phase-[N],[feature-tags]"
+   ```
+2. Copy the generated frontmatter from script output
+3. Replace entire frontmatter section in review doc (between `---` markers)
+4. Verify `_generated: true` now present
+5. Re-run Step 5.3 verification
+
+**Prevention**:
+- ALWAYS run frontmatter generation script before creating review doc
+- Never manually construct frontmatter
+- Verify `_generated: true` immediately after creating document
+
+#### Issue 2: Review Status Doesn't Match Issues Found
+
+**Symptoms**:
+- Step 5.3 verification fails on status consistency check
+- Blocking issues present but status is "approved"
+- No blocking issues but status is "revisions_needed"
+- Issue counts in frontmatter don't match body
+- Reviewer contradicts themselves
+
+**Diagnostic Steps**:
+1. Count blocking issues in review document body
+2. Check frontmatter `status` field
+3. Check frontmatter `blocking` count
+4. Review decision rationale for consistency
+5. Compare against decision criteria in Step 5.2
+
+**Resolution**:
+1. **If blocking issues exist but status is approved**:
+   - Change status to `revisions_needed` or `approved_with_notes`
+   - Blocking issues MUST be resolved before approval
+   - Update decision rationale to explain why revisions needed
+2. **If no blocking issues but status is revisions_needed**:
+   - Review if issues are truly blocking
+   - Downgrade non-blocking issues to major/minor
+   - Change status to `approved_with_notes` if only warnings
+3. **If counts mismatch**:
+   - Recount issues in body by severity
+   - Update frontmatter `issues` and `blocking` fields
+   - Use str_replace to fix frontmatter counts
+4. Re-run Step 5.3 verification
+
+**Prevention**:
+- Count issues immediately after writing them
+- Apply decision criteria strictly (Step 5.2)
+- Cross-check status against blocking count before verification
+
+#### Issue 3: Review Lacks Specific file:line References
+
+**Symptoms**:
+- Step 5.3 verification fails on file reference check
+- Issues describe problems vaguely ("in the auth module")
+- No line numbers provided for findings
+- Developers can't locate the issues you found
+- Feedback that review is not actionable
+
+**Diagnostic Steps**:
+1. Review all issues in review document
+2. Check each issue for specific file:line references
+3. Look for vague references without exact locations
+4. Verify format: `path/to/file.ext:line` or `file.ext:start-end`
+5. Check if references match actual code locations
+
+**Resolution**:
+1. For each vague issue:
+   - Re-read the relevant file using view tool
+   - Find exact line number(s) of the problematic code
+   - Update issue to include: `path/to/file.ext:line`
+   - Use range for multi-line issues: `file.ext:start-end`
+2. Format examples:
+   - `auth/login.py:45` - Single line reference
+   - `auth/login.py:45-67` - Multi-line reference
+   - Use absolute paths from repo root
+3. For each issue, ensure location is precise enough for developer to find immediately
+4. Re-run Step 5.3 verification
+
+**Prevention**:
+- Note file:line while reviewing code (before writing review)
+- Use view tool output line numbers as reference
+- Test references - can you find the code from your reference?
+- Make finding exact locations a priority during code review
+
+#### Issue 4: Educational Context Missing or Shallow
+
+**Symptoms**:
+- Review identifies issues but doesn't explain WHY they're problems
+- No mini-lessons included despite multiple teachable moments
+- Feedback feels like a checklist, not educational
+- Developers repeat same mistakes in future phases
+- Missing "Growth Opportunities" section or too brief
+
+**Diagnostic Steps**:
+1. Review "Growth Opportunities & Learning" section
+2. Count mini-lessons provided (should be 2-5)
+3. Check if each issue includes "why this matters" explanation
+4. Verify lessons connect to broader programming principles
+5. Review if lessons are specific to this code, not generic advice
+
+**Resolution**:
+1. **Add educational context to issues**:
+   - For each blocking/major issue, add "Why this matters" paragraph
+   - Connect issue to broader principles (maintainability, security, performance)
+   - Explain consequences of not fixing
+2. **Create mini-lessons**:
+   - Identify 2-5 teachable moments from review
+   - Write lessons using template: Concept → Why It Matters → Example → Improvement
+   - Use actual code from this review as examples
+   - Connect to principles developers can apply elsewhere
+3. **Growth Opportunities section**:
+   - List 2-3 patterns/practices done well (positive reinforcement)
+   - Suggest 2-3 areas for growth (constructive)
+   - Make suggestions actionable and specific
+4. Review complete document for educational value
+
+**Prevention**:
+- Think "teaching opportunity" while reviewing code
+- Ask "what principle does this violate?" for each issue
+- Draft mini-lessons as you discover teachable moments
+- Remember: education is 50% of your role
+
+### General Debugging
+
+**If agent is stuck or repeating**:
+- Check self-monitoring protocol triggered (see repetition detection)
+- Review command history for loops (same command 3+ times)
+- Verify all required files are accessible
+- Check if plan/implementation references are valid
+
+**If review is incomplete**:
+- Verify all phases from plan were evaluated
+- Check that all modified files were examined (git diff)
+- Ensure all required sections present (use template)
+- Review Step 5.3 verification checklist results
+
+**If format is incorrect**:
+- Compare review against template in Step 5
+- Verify frontmatter generated by script (check `_generated: true`)
+- Validate XML structure in verification checklists
+- Check document is in correct directory (thoughts/reviews/)
+
+**If timing is wrong**:
+- Review should occur AFTER phase completion, not during
+- Wait for implementation-planner to confirm phase done
+- Don't review partial implementations
+- Coordinate with user on review timing

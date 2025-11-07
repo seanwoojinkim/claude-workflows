@@ -50,6 +50,16 @@ Gather and read ALL documents related to the feature:
 
 ### Phase 2: Concept Extraction
 
+<critical_requirement priority="highest">
+  🚨 CRITICAL: Concept Extraction is Where Learning Begins 🚨
+
+  This phase determines the ENTIRE learning document quality.
+  Shallow extraction = shallow learning.
+  Thorough extraction = valuable education.
+
+  You must identify EVERY significant pattern, technique, and decision.
+</critical_requirement>
+
 Systematically identify:
 
 **Architectural Patterns:**
@@ -114,6 +124,20 @@ Organize concepts by learning level:
 
 ### Phase 4: Decision Documentation
 
+<critical_requirement priority="highest">
+  🚨 CRITICAL: Decision Rationale Captures the WHY 🚨
+
+  This is NOT a "what was built" summary.
+  This is "WHY we chose this approach" documentation.
+
+  Every significant decision needs:
+  - Options considered (not just the chosen one)
+  - Trade-offs explicitly stated
+  - Context that influenced the choice
+
+  Without WHY, learning is incomplete.
+</critical_requirement>
+
 For each significant decision, document:
 - **What** was decided
 - **Why** that approach was chosen
@@ -123,26 +147,73 @@ For each significant decision, document:
 
 ### Phase 5: Learning Document Creation
 
-Generate learning doc at suggested path from script output (e.g., `thoughts/learning/YYYY-MM-DD-feature-synthesis.md`)
+<mandatory_step priority="critical" step_number="5.1">
+  <step_name>Generate Frontmatter with Script</step_name>
 
-**Generate Frontmatter**:
-Use `hack/generate_frontmatter.sh` to create complete frontmatter automatically:
+  <instruction>
+    🚨 CRITICAL: Frontmatter Generation 🚨
 
-```bash
-./hack/generate_frontmatter.sh learning "Learning Synthesis: [Feature Name]" TICKET \
-  --feature-ref thoughts/plans/2025-10-15-feature.md \
-  --learning-type comprehensive_synthesis \
-  --level intermediate \
-  --concepts "pattern-1,technique-2,concept-3" \
-  --patterns "repository,service-object,observer" \
-  --tags "learning,patterns,domain,component" \
-  --related "thoughts/plans/2025-10-15-feature.md,thoughts/reviews/2025-10-15-phase-1-review.md"
-```
+    YOU MUST run this exact command BEFORE creating the learning document.
+    This is NOT optional. This is NOT a suggestion.
 
-**CRITICAL**: Do NOT manually construct frontmatter - use the script to avoid context waste.
-See `.claude/FRONTMATTER_GENERATION.md` for examples and all options.
+    <required_command>
+    ./hack/generate_frontmatter.sh learning "Learning Synthesis: [Feature Name]" [TICKET] \
+      --feature-ref thoughts/plans/[date]-[ticket]-[feature].md \
+      --learning-type comprehensive_synthesis \
+      --level [beginner|intermediate|advanced] \
+      --concepts "[concept-1],[concept-2],[concept-3]" \
+      --patterns "[pattern-1],[pattern-2],[pattern-3]" \
+      --tags "learning,patterns,[domain],[component]" \
+      --related "[path-1].md,[path-2].md,[path-3].md"
+    </required_command>
 
-Paste complete frontmatter from script output:
+    <parameter_guidance>
+      - [Feature Name]: Human-readable feature description
+      - [TICKET]: Project ticket ID (e.g., ENG-1234) or omit if none
+      - [date], [ticket], [feature]: Components of plan filename
+      - [beginner|intermediate|advanced]: Target learning level (usually intermediate)
+      - [concept-1], [concept-2]: Key programming concepts explained (3-6 concepts)
+      - [pattern-1], [pattern-2]: Design patterns applied (2-5 patterns)
+      - [domain], [component]: Replace with actual feature area tags
+      - [path-1], [path-2]: Paths to related docs (plan, reviews, research)
+      - Learning type is always "comprehensive_synthesis" for full feature learnings
+    </parameter_guidance>
+  </instruction>
+
+  <rationale>
+    This script saves 300-500 tokens per document by:
+    - Auto-gathering git metadata (commit, branch, author)
+    - Generating consistent timestamps
+    - Cross-referencing related documents (plan, reviews, implementation)
+    - Validating required fields for learning docs
+    - Computing learning-specific metadata (concepts, patterns, level)
+
+    Manual frontmatter wastes the EXACT context this script was designed to save.
+
+    For learning documents, comprehensive metadata is CRITICAL because:
+    - Cross-references link learning to original development artifacts
+    - Concept/pattern tags enable future searchability
+    - Feature references maintain documentation lineage
+  </rationale>
+
+  <verification>
+    After running script, verify output includes `_generated: true` field.
+    If missing: YOU FORGOT THE SCRIPT. Stop and re-run.
+  </verification>
+
+  <consequence_of_failure>
+    Manual frontmatter = broken learning documentation lineage + wasted context + compliance failure
+  </consequence_of_failure>
+</mandatory_step>
+
+<mandatory_step priority="high" step_number="5.2">
+  <step_name>Create Document with Script Output</step_name>
+
+  <instruction>
+    Generate learning doc at suggested path from script output (e.g., `thoughts/learning/YYYY-MM-DD-feature-synthesis.md`)
+
+    Paste complete frontmatter from Step 5.1 script output:
+  </instruction>
 
 # Learning Synthesis: [Feature Name]
 
@@ -533,6 +604,115 @@ Example: [One-liner or short snippet]
 **Feature development**: [Start] to [End] ([duration])
 ```
 
+### Phase 5.5: Self-Verification Before Presenting
+
+<mandatory_step priority="critical" step_number="5.5">
+  <step_name>Self-Verification Before Presenting Learning Synthesis</step_name>
+
+  <verification_checklist>
+    <item priority="blocking">
+      <check>Document created in `thoughts/learning/` directory</check>
+      <validation>Run: ls thoughts/learning/[filename].md</validation>
+      <on_failure>STOP. Move document to correct directory.</on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Frontmatter includes `_generated: true` field</check>
+      <validation>
+        Open document, inspect frontmatter (between first pair of `---`).
+        Search for line: `_generated: true`
+      </validation>
+      <on_failure>
+        🚨 CRITICAL COMPLIANCE FAILURE 🚨
+
+        You manually constructed frontmatter instead of using the script.
+
+        IMMEDIATE REMEDIATION:
+        1. Re-run Phase 5.1 (generate frontmatter with script)
+        2. Replace entire frontmatter section (between `---` markers)
+        3. Re-run this verification
+        4. Verify `_generated: true` now present
+
+        DO NOT present document until this is fixed.
+      </on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Filename matches convention: `YYYY-MM-DD-[ticket]-feature-synthesis.md`</check>
+      <validation>Check date (YYYY-MM-DD), optional ticket, descriptive name, "-synthesis" suffix</validation>
+      <on_failure>Rename file to match convention</on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>All feature references resolve (learning-specific)</check>
+      <validation>
+        Check frontmatter `feature_reference` field points to valid plan
+        Check `related_docs` array: verify all paths exist
+        Check inline references to implementation/review docs
+      </validation>
+      <on_failure>Fix broken references or remove if no longer applicable</on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Required sections present (learning-specific)</check>
+      <validation>
+        Verify document includes ALL of these sections:
+        - Architectural Overview
+        - Concepts & Patterns: Beginner Level (2-4 concepts)
+        - Concepts & Patterns: Intermediate Level (3-6 patterns)
+        - Concepts & Patterns: Advanced Level (2-4 topics)
+        - Key Decisions & Rationale (3-5 decisions)
+        - Learning Path Forward
+      </validation>
+      <on_failure>
+        Add missing sections from Phase 5 template
+        If sections exist but are empty: populate with content from Phase 2-4 analysis
+        Ensure each section has substantive content
+      </on_failure>
+    </item>
+
+    <item priority="blocking">
+      <check>Code examples reference actual implementation</check>
+      <validation>
+        Review code examples in Concepts & Patterns sections
+        Verify examples include file:line references (e.g., `file.rb:123-145`)
+        Check that referenced lines actually exist in codebase
+      </validation>
+      <on_failure>
+        Re-read implementation files
+        Add correct file:line references to all code examples
+        Ensure examples show actual code from the feature
+      </on_failure>
+    </item>
+
+    <item priority="warning">
+      <check>Complexity levels are appropriate</check>
+      <validation>
+        Beginner concepts: Basic language features, simple patterns
+        Intermediate concepts: Design patterns, framework conventions
+        Advanced concepts: Architectural decisions, complex trade-offs
+      </validation>
+      <on_failure>
+        Reclassify concepts to correct complexity level
+        Ensure learning progression makes sense
+      </on_failure>
+    </item>
+  </verification_checklist>
+
+  <if_any_blocking_failure>
+    DO NOT proceed to user presentation.
+
+    Fix all blocking issues first.
+    Re-run verification.
+    Only present when all blocking items pass.
+  </if_any_blocking_failure>
+
+  <if_all_checks_pass>
+    Document ready for presentation.
+    Proceed to Phase 6 (present to user).
+  </if_all_checks_pass>
+</mandatory_step>
+
 ### Phase 6: Present Synthesis Summary
 
 Provide user with:
@@ -620,5 +800,185 @@ Learning documents should be:
 - **Well-organized**: Easy to navigate
 - **Referenced**: Links to further learning
 - **Honest**: Include challenges and failures
+
+## Troubleshooting
+
+### Common Issues
+
+#### Issue 1: Learning Doc Missing Complexity Levels
+
+**Symptoms**:
+- All concepts lumped into one section
+- No distinction between beginner, intermediate, advanced
+- Learning progression is unclear
+
+**Diagnostic Steps**:
+1. Open learning document and scan for section headings
+2. Check for "Concepts & Patterns: Beginner Level" section
+3. Check for "Concepts & Patterns: Intermediate Level" section
+4. Check for "Concepts & Patterns: Advanced Level" section
+5. If any missing: Phase 3 (Complexity Analysis) was skipped
+
+**Resolution**:
+1. Return to Phase 3: Complexity Analysis
+2. Review all identified concepts from Phase 2
+3. Categorize each concept:
+   - Beginner: Basic language syntax, simple control flow, fundamental concepts
+   - Intermediate: Design patterns, framework conventions, database relationships, API design
+   - Advanced: Architectural decisions, performance optimizations, scalability, complex trade-offs
+4. Create separate sections for each level in document
+5. Move concepts to appropriate complexity section
+6. Ensure 2-4 beginner, 3-6 intermediate, 2-4 advanced concepts minimum
+7. Re-run Phase 5.5 verification to confirm structure
+
+**Prevention**:
+- Complete Phase 3 BEFORE Phase 5 (document creation)
+- Use Phase 3 complexity criteria explicitly when categorizing
+- Keep target audience in mind (amateur to mid-level developers)
+- Verification checklist (Phase 5.5) will catch this issue
+
+#### Issue 2: Code Examples Don't Reference Actual Implementation
+
+**Symptoms**:
+- Code examples are generic or hypothetical
+- No file:line references in examples
+- Examples don't match actual feature code
+
+**Diagnostic Steps**:
+1. Review code examples in "Concepts & Patterns" sections
+2. Check for file:line references (e.g., `app/models/user.rb:45-67`)
+3. If references missing: examples are not grounded in actual code
+4. Try to find referenced files in codebase - do they exist?
+
+**Resolution**:
+1. Return to Phase 1: Artifact Collection
+2. Re-read all implementation files mentioned in plan/reviews
+3. For each concept/pattern explained:
+   - Find actual usage in implementation files
+   - Note exact file path and line numbers
+   - Extract relevant code snippet (5-20 lines typical)
+4. Update examples in document:
+   - Add file:line reference above each example
+   - Use actual code from implementation (not pseudo-code)
+   - Add explanatory comments within code
+5. Verify all file:line references are accurate:
+   ```bash
+   # For each reference, check file exists and lines are in range
+   wc -l app/models/user.rb  # Check file has enough lines
+   ```
+
+**Prevention**:
+- During Phase 2 (Concept Extraction), note WHERE each pattern is used immediately
+- Keep implementation files open while writing document
+- Include file:line references as you write, not after
+- Phase 5.5 verification checks for this explicitly
+
+#### Issue 3: Decision Rationale Missing
+
+**Symptoms**:
+- "Key Decisions & Rationale" section lists decisions but not WHY
+- Alternatives not mentioned
+- Trade-offs not explained
+- Reads like "what we did" instead of "why we chose this"
+
+**Diagnostic Steps**:
+1. Open "Key Decisions & Rationale" section
+2. For each decision, check if these are present:
+   - Options considered (not just chosen option)
+   - Pros/cons of each option
+   - Why chosen option was selected
+   - Trade-offs accepted
+   - Context that influenced decision
+3. If any decision lacks these: Phase 4 was incomplete
+
+**Resolution**:
+1. Return to Phase 1: Read plan document completely
+   - Plan should explain architectural decisions
+   - Look for "Architecture Design" or "Options" sections
+2. Read review documents:
+   - Reviews often discuss trade-offs and alternatives
+   - Check reviewer comments on approach
+3. For each decision, reconstruct:
+   - What alternatives existed (if not in plan, infer from codebase patterns)
+   - Why chosen approach is better for this context
+   - What trade-offs were accepted (complexity vs. performance, etc.)
+4. Update decision documentation:
+   - Start with "Context" (what situation led to decision)
+   - List 2-3 "Options considered" with pros/cons
+   - Mark chosen option clearly
+   - Explain "Why we chose" with specific reasoning
+   - Add "What we learned" reflection
+5. Aim for 3-5 significant decisions minimum
+
+**Prevention**:
+- Phase 4 is CRITICAL - don't skip or rush it
+- Read plan's architecture section carefully for decision rationale
+- If plan lacks WHY explanations, look at implementation choices and infer
+- Ask: "If I were teaching this decision, what would I explain?"
+
+#### Issue 4: Frontmatter Missing _generated Field
+
+**Symptoms**:
+- Learning document created but verification fails
+- Frontmatter looks manually constructed
+- Missing git metadata, no feature references
+
+**Diagnostic Steps**:
+1. Open learning document
+2. Check frontmatter (between first `---` markers)
+3. Search for line: `_generated: true`
+4. If missing: you skipped Phase 5.1 (script execution)
+
+**Resolution**:
+1. Re-run Phase 5.1 frontmatter generation script:
+   ```bash
+   ./hack/generate_frontmatter.sh learning "Learning Synthesis: [Feature]" [TICKET] \
+     --feature-ref thoughts/plans/[date]-[ticket]-[feature].md \
+     --learning-type comprehensive_synthesis \
+     --level [beginner|intermediate|advanced] \
+     --concepts "[concept-1],[concept-2],[concept-3]" \
+     --patterns "[pattern-1],[pattern-2],[pattern-3]" \
+     --tags "learning,patterns,[domain],[component]" \
+     --related "[path-1].md,[path-2].md,[path-3].md"
+   ```
+2. Copy the complete frontmatter output from script
+3. Replace entire frontmatter section in document (between `---` markers)
+4. Re-run Phase 5.5 verification
+5. Confirm `_generated: true` now present
+
+**Prevention**:
+- Phase 5.1 is MANDATORY, not optional
+- Run script BEFORE creating document (not after)
+- Verify `_generated: true` field immediately after running script
+- If you catch yourself typing frontmatter: STOP and run the script
+
+### General Debugging
+
+**If agent is stuck or repeating**:
+- Check that you've completed Phase 1 (Artifact Collection) fully
+- Verify you read ALL related documents (plan, implementation, reviews)
+- Ensure you're not skipping phases (must do 1→2→3→4→5 in order)
+- Review Phase 2 extraction - shallow extraction leads to shallow synthesis
+
+**If output is incomplete**:
+- Verify all required sections from Phase 5 template are present
+- Run Phase 5.5 verification checklist explicitly
+- Check that you completed Phase 2 (Concept Extraction) thoroughly
+- Ensure Phase 4 (Decision Documentation) captured all major decisions
+- Confirm code examples are from actual implementation (not hypothetical)
+
+**If format is incorrect**:
+- Compare against Phase 5 document structure template line-by-line
+- Verify frontmatter generated by script (Phase 5.1), not manually typed
+- Check that XML structure (Phase 5.1, Phase 5.5) is well-formed
+- Ensure all placeholders were replaced with actual values
+- Confirm learning sections follow Beginner→Intermediate→Advanced progression
+
+**If learning is too shallow**:
+- Return to Phase 2: Extract MORE concepts (aim for 12-20 total)
+- Read implementation files more carefully - look for patterns you missed
+- Check plan and reviews for architectural decisions to document
+- Expand each concept explanation - add more "why" and "when to use"
+- Add more code examples with detailed comments
 
 Remember: Your goal is to transform a development experience into lasting knowledge. Every feature built is an investment in learning - your synthesis ensures that investment pays dividends by making implicit knowledge explicit and scattered lessons into structured learning.
